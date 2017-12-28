@@ -13,9 +13,10 @@ function guErr(err) {
 }
 
 module.exports = function (options) {
-  var opts = assign({}, options);
-
   return through.obj(function (file, enc, cb) {
+    var opts = assign({}, options);
+    var rawGlobals = opts.rawGlobals || false;
+    delete opts.rawGlobals;
 
     if (file.isStream()) {
       return cb(guErr('Streaming not supported'));
@@ -30,7 +31,7 @@ module.exports = function (options) {
       opts.sourcemap = assign({basePath: file.base}, opts.sourcemap);
     }
     if (file.data) {
-      opts.define = file.data;
+      opts[rawGlobals ? 'rawDefine' : 'define'] = file.data;
     }
     opts.filename = file.path;
 
